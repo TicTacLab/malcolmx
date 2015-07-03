@@ -1,6 +1,7 @@
 (ns malcolmx.core
   (:require [clojure.java.io :as io]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [malcolmx.math :as math])
   (:import [org.apache.poi.ss.usermodel WorkbookFactory Workbook Sheet Cell Row FormulaEvaluator]
            [java.util List]))
 
@@ -13,6 +14,12 @@
           (when-let [value (get row-data header-name)]
             (.setCellValue cell value)))
         row header))
+
+(defn make-evaluator [^Workbook workbook]
+  (math/register-udf-funs! workbook)
+  (-> workbook
+      (.getCreationHelper)
+      (.createFormulaEvaluator)))
 
 (defn formula-eval
   "eval excel formulas"
@@ -59,9 +66,7 @@
   (let [sheet (.getSheet workbook sheet-name)
         header (sheet-header sheet)
         id-index (.indexOf ^List header id-column)
-        evaluator (-> workbook
-                      (.getCreationHelper)
-                      (.createFormulaEvaluator))]
+        evaluator (make-evaluator workbook)]
     (loop [index 1
            data sheet-data]
       (when (seq data)
@@ -77,9 +82,7 @@
 (defn get-sheet [^Workbook workbook sheet-name]
   (let [sheet (.getSheet workbook sheet-name)
         header (sheet-header sheet)
-        evaluator (-> workbook
-                      (.getCreationHelper)
-                      (.createFormulaEvaluator))]
+        evaluator (make-evaluator workbook)]
     (map (fn [row]
            (zipmap header (map (partial cell-value evaluator)
                                row)))
