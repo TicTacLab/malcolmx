@@ -77,7 +77,7 @@
   (with-open [in (io/input-stream input)]
     (WorkbookFactory/create in)))
 
-(defn update-sheet!
+(defn ^Workbook update-sheet!
   "Update sheet with sheet-name at workbook using sheet-data.
    It updates corresponding rows with sheet-data using id-column
    as index. It updates only those rows and cells that are present
@@ -97,7 +97,8 @@
             (do
               (set-row! row header row-data)
               (recur (inc index) (rest data)))
-            (recur (inc index) data)))))))
+            (recur (inc index) data)))))
+    workbook))
 
 (defn get-sheet [^Workbook workbook sheet-name & {profile? :profile?}]
   (let [sheet (.getSheet workbook sheet-name)
