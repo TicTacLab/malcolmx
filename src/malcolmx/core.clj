@@ -75,7 +75,7 @@
         id-index (.indexOf ^List header id-column)
         evaluator (make-evaluator workbook)]
     (loop [index 1
-           data sheet-data]
+           data (sort-by #(get % id-column) sheet-data)]
       (when (seq data)
         (let [row (.getRow sheet index)
               row-data (first data)]

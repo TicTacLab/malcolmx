@@ -151,30 +151,30 @@
                      "param"   89.5}]
         data [{"value" 1.0,
                  "id" 1.0}
-                {"value" 2.0,
-                 "id" 2.0}
-                {"value" 3.0,
-                 "id" 3.0}
-                {"value" 4.0,
-                 "id" 4.0}
-                {"value" 5.0,
-                 "id" 5.0}
-                {"value" 6.0,
-                 "id" 6.0}
-                {"value" 7.0,
-                 "id" 7.0}
-                {"value" 8.0,
-                 "id" 8.0}
-                {"value" 9.0,
-                 "id" 9.0}
-                {"value" 10.0,
-                 "id" 10.0}
-                {"value" 11.0,
-                 "id" 11.0}
-                {"value" 12.0,
-                 "id" 12.0}
-                {"value" 13.0,
-                 "id" 13.0}]]
+              {"value" 4.0,
+               "id" 4.0}
+              {"value" 2.0,
+               "id" 2.0}
+              {"value" 3.0,
+               "id" 3.0}
+              {"value" 5.0,
+               "id" 5.0}
+              {"value" 6.0,
+               "id" 6.0}
+              {"value" 7.0,
+               "id" 7.0}
+              {"value" 8.0,
+               "id" 8.0}
+              {"value" 9.0,
+               "id" 9.0}
+              {"value" 10.0,
+               "id" 10.0}
+              {"value" 11.0,
+               "id" 11.0}
+              {"value" 12.0,
+               "id" 12.0}
+              {"value" 13.0,
+               "id" 13.0}]]
     (update-sheet! wb "IN" data :by "id")
     (is (= in-result (get-sheet wb "IN")))
     (is (= out-result (get-sheet wb "OUT")))))
