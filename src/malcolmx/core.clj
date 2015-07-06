@@ -55,6 +55,19 @@
     Cell/CELL_TYPE_BLANK nil
     (log/errorf "Undefined cell type: %" (.getCellType cell))))
 
+
+(defmacro with-timer-when [profile? & body]
+  `(if ~profile?
+     (let [start# (System/nanoTime)
+           ret# (do ~@body)
+           time-call#
+           (/
+             (double
+               (- (System/nanoTime) start#))
+             1000000.0)]
+       (assoc ret# "timer" (int time-call#)))
+     (do ~@body)))
+
 ;; PUBLIC API
 
 (defn parse
@@ -86,11 +99,12 @@
               (recur (inc index) (rest data)))
             (recur (inc index) data)))))))
 
-(defn get-sheet [^Workbook workbook sheet-name]
+(defn get-sheet [^Workbook workbook sheet-name & {profile? :profile?}]
   (let [sheet (.getSheet workbook sheet-name)
         header (sheet-header sheet)
         evaluator (make-evaluator workbook)]
     (map (fn [row]
-           (zipmap header (map (partial cell-value evaluator)
-                               row)))
+           (with-timer-when profile?
+             (zipmap header (map (partial cell-value evaluator)
+                                 row))))
          (rest sheet))))
