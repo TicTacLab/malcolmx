@@ -3,7 +3,8 @@
             [clojure.tools.logging :as log]
             [malcolmx.math :as math])
   (:import [org.apache.poi.ss.usermodel WorkbookFactory Workbook Sheet Cell Row FormulaEvaluator]
-           [java.util List]))
+           [java.util List]
+           [org.apache.poi.ss.util CellReference]))
 
 (defn sheet-header [^Sheet sheet]
   (let [row (.getRow sheet 0)]
@@ -21,32 +22,38 @@
       (.getCreationHelper)
       (.createFormulaEvaluator)))
 
-(defn formula-eval
-  "eval excel formulas"
-  [^Cell cell ^FormulaEvaluator evaluator]
-  (try
-    (.evaluate evaluator cell)
-    (catch Exception e
-      (log/errorf e "Cant eval formula '%s'\nSheet: %s\nRow: %d\nCell: %d)" (.getCellFormula cell)
-                  (.getSheetName (.getSheet cell))
-                  (.getRowIndex cell)
-                  (.getColumnIndex cell)))))
-
 (defn error-code [code]
   (condp = code
     15 "VALUE!"
     7  "DIV/0"
     (str "formula error:" code )))
 
+(defn formula-cell-value
+  "eval excel formulas"
+  [^FormulaEvaluator evaluator ^Cell cell ]
+  (try
+    (let [cell-value (.evaluate evaluator cell)]
+      (condp = (.getCellType cell-value)
+        Cell/CELL_TYPE_NUMERIC (.getNumberValue cell-value)
+        Cell/CELL_TYPE_STRING (.getStringValue cell-value)
+        Cell/CELL_TYPE_BOOLEAN (.getBooleanValue cell-value)
+        Cell/CELL_TYPE_ERROR (error-code (.getErrorValue cell-value))
+        (log/errorf "Undefined cell type: %" (.getCellType cell-value))))
+    (catch Exception e
+      (log/errorf e "Can't evaluate\nCell: '%s!%s'\nFormula: '%s'\n"
+                  (.getSheetName (.getSheet cell))
+                  (.formatAsString (CellReference. (.getRowIndex cell) (.getColumnIndex cell)))
+                  (.getCellFormula cell)))))
+
 (defn cell-value [^FormulaEvaluator evaluator ^Cell cell]
   (condp = (.getCellType cell)
-    Cell/CELL_TYPE_FORMULA    (cell-value (formula-eval cell evaluator) evaluator)
-    Cell/CELL_TYPE_NUMERIC    (.getNumericCellValue cell)
-    Cell/CELL_TYPE_STRING     (.getStringCellValue cell)
-    Cell/CELL_TYPE_BOOLEAN    (.getBooleanCellValue cell)
-    Cell/CELL_TYPE_ERROR      (error-code (.getErrorCellValue cell))
-    Cell/CELL_TYPE_BLANK      nil
-    (log/errorf "Undef cell type: %" (.getCellType cell))))
+    Cell/CELL_TYPE_FORMULA (formula-cell-value evaluator cell)
+    Cell/CELL_TYPE_NUMERIC (.getNumericCellValue cell)
+    Cell/CELL_TYPE_STRING (.getStringCellValue cell)
+    Cell/CELL_TYPE_BOOLEAN (.getBooleanCellValue cell)
+    Cell/CELL_TYPE_ERROR (error-code (.getErrorCellValue cell))
+    Cell/CELL_TYPE_BLANK nil
+    (log/errorf "Undefined cell type: %" (.getCellType cell))))
 
 ;; PUBLIC API
 

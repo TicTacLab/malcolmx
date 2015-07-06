@@ -4,7 +4,7 @@
 
 (deftest super-test
   (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
-        result [{"code" "P_SCORE_A_PART_1",
+        in-result [{"code" "P_SCORE_A_PART_1",
                        "value" 1.0,
                        "name" "Score A Part 1",
                        "type" "Parameter",
@@ -69,6 +69,86 @@
                        "name" "Check box 0,99",
                        "type" "Parameter",
                        "id" 13.0}]
+        out-result [{"coef"    2.5302341930958367, "id" 1.0, "m_code" "MATCH_NORM.DIST_300",
+                     "market"  "Norm.Dist_300", "mgp_code" "DISTRIBUTION", "mgp_weight" 1.0,
+                     "mn_code" "NORM_300", "mn_weight" 11.0, "o_code" "A", "outcome" "A",
+                     "param"   999999.0}
+                    {"coef"    1.460323733283845, "id" 2.0, "m_code" "MATCH_NORM.DIST_300",
+                     "market"  "Norm.Dist_300", "mgp_code" "DISTRIBUTION", "mgp_weight" 1.0,
+                     "mn_code" "NORM_300", "mn_weight" 11.0, "o_code" "B", "outcome" "B",
+                     "param"   999999.0}
+                    {"coef"    3.3852250801427837, "id" 3.0, "m_code" "PART1_NORM.DIST_80",
+                     "market"  "Norm.Dist_80", "mgp_code" "DISTRIBUTION", "mgp_weight" 1.0,
+                     "mn_code" "NORM_80", "mn_weight" 21.0, "o_code" "A", "outcome" "A",
+                     "param"   999999.0}
+                    {"coef"    1.2745369596148286, "id" 4.0, "m_code" "PART1_NORM.DIST_80",
+                     "market"  "Norm.Dist_80", "mgp_code" "DISTRIBUTION", "mgp_weight" 1.0,
+                     "mn_code" "NORM_80", "mn_weight" 21.0, "o_code" "B", "outcome" "B",
+                     "param"   999999.0}
+                    {"coef"    0.9259259259259272, "id" 5.0, "m_code" "PART2_POISSON_80",
+                     "market"  "Poisson_80", "mgp_code" "DISTRIBUTION", "mgp_weight" 1.0,
+                     "mn_code" "POISSON_80", "mn_weight" 31.0, "o_code" "A", "outcome" "A",
+                     "param"   999999.0}
+                    {"coef"      150.0, "id" 6.0, "m_code" "PART2_POISSON_80", "market" "Poisson_80",
+                     "mgp_code"  "DISTRIBUTION", "mgp_weight" 1.0, "mn_code" "POISSON_80",
+                     "mn_weight" 31.0, "o_code" "B", "outcome" "B",
+                     "param"     999999.0}
+                    {"coef"    0.9259259259259263, "id" 7.0, "m_code" "PART3_POISSON_300",
+                     "market"  "Poisson_300", "mgp_code" "DISTRIBUTION", "mgp_weight" 1.0,
+                     "mn_code" "POISSON_300", "mn_weight" 41.0, "o_code" "A", "outcome" "A",
+                     "param"   999999.0}
+                    {"coef"      150.0, "id" 8.0, "m_code" "PART3_POISSON_300", "market" "Poisson_300",
+                     "mgp_code"  "DISTRIBUTION", "mgp_weight" 1.0, "mn_code" "POISSON_300",
+                     "mn_weight" 41.0, "o_code" "B", "outcome" "B",
+                     "param"     999999.0}
+                    {"coef"    1.3419216317767044, "id" 9.0, "m_code" "MATCH_VPR_NORM.DIST_300",
+                     "market"  "ВПР Norm.Dist_81", "mgp_code" "OTHER", "mgp_weight" 100.0,
+                     "mn_code" "VPR_NORM_150", "mn_weight" 12.0, "o_code" "A", "outcome" "A",
+                     "param"   190.0}
+                    {"coef"    2.986857825567502, "id" 10.0, "m_code" "MATCH_VPR_NORM.DIST_300",
+                     "market"  "ВПР Norm.Dist_81", "mgp_code" "OTHER", "mgp_weight" 100.0,
+                     "mn_code" "VPR_NORM_150", "mn_weight" 12.0, "o_code" "B", "outcome" "B",
+                     "param"   190.0}
+                    {"coef"    3.561253561253567, "id" 11.0, "m_code" "MATCH_VPR_POISSON_81",
+                     "market"  "ВПР Poisson_81", "mgp_code" "OTHER", "mgp_weight" 100.0,
+                     "mn_code" "VPR_POISSON_81", "mn_weight" 13.0, "o_code" "A", "outcome" "A",
+                     "param"   500.0}
+                    {"coef"    1.2512512512512506, "id" 12.0, "m_code" "MATCH_VPR_POISSON_81",
+                     "market"  "ВПР Poisson_81", "mgp_code" "OTHER", "mgp_weight" 100.0,
+                     "mn_code" "VPR_POISSON_81", "mn_weight" 13.0, "o_code" "B", "outcome" "B",
+                     "param"   500.0}
+                    {"coef"    "formula error:36", "id" 13.0, "m_code" "MATCH_PROB",
+                     "market"  "Match Probability", "mgp_code" "OTHER", "mgp_weight" 100.0,
+                     "mn_code" "PROB", "mn_weight" 14.0, "o_code" "A", "outcome" "A",
+                     "param"   999999.0}
+                    {"coef"    "formula error:36", "id" 14.0, "m_code" "MATCH_PROB",
+                     "market"  "Match Probability", "mgp_code" "OTHER", "mgp_weight" 100.0,
+                     "mn_code" "PROB", "mn_weight" 14.0, "o_code" "B", "outcome" "B",
+                     "param"   999999.0}
+                    {"coef"    -1.187367238518843E-33, "id" 15.0, "m_code" "MATCH_TOTAL",
+                     "market"  "Match Total", "mgp_code" "SIMPLE OPERATION", "mgp_weight" 2.0,
+                     "mn_code" "TOTAL", "mn_weight" 15.0, "o_code" "OVER", "outcome" "Over",
+                     "param"   208.5}
+                    {"coef"    1.187367238518843E-33, "id" 16.0, "m_code" "MATCH_TOTAL",
+                     "market"  "Match Total", "mgp_code" "SIMPLE OPERATION", "mgp_weight" 2.0,
+                     "mn_code" "TOTAL", "mn_weight" 15.0, "o_code" "UNDER", "outcome" "Under",
+                     "param"   208.5}
+                    {"coef"    -3.2684236470440286E-33, "id" 17.0, "m_code" "MATCH_TOTAL",
+                     "market"  "Match Total", "mgp_code" "SIMPLE OPERATION", "mgp_weight" 2.0,
+                     "mn_code" "TOTAL", "mn_weight" 15.0, "o_code" "OVER", "outcome" "Over",
+                     "param"   88.5}
+                    {"coef"    3.2684236470440286E-33, "id" 18.0, "m_code" "MATCH_TOTAL",
+                     "market"  "Match Total", "mgp_code" "SIMPLE OPERATION", "mgp_weight" 2.0,
+                     "mn_code" "TOTAL", "mn_weight" 15.0, "o_code" "UNDER", "outcome" "Under",
+                     "param"   88.5}
+                    {"coef"    -3.0333987132024294E-33, "id" 19.0, "m_code" "MATCH_TOTAL",
+                     "market"  "Match Total", "mgp_code" "SIMPLE OPERATION", "mgp_weight" 2.0,
+                     "mn_code" "TOTAL", "mn_weight" 15.0, "o_code" "OVER", "outcome" "Over",
+                     "param"   89.5}
+                    {"coef"    3.0333987132024294E-33, "id" 20.0, "m_code" "MATCH_TOTAL",
+                     "market"  "Match Total", "mgp_code" "SIMPLE OPERATION", "mgp_weight" 2.0,
+                     "mn_code" "TOTAL", "mn_weight" 15.0, "o_code" "UNDER", "outcome" "Under",
+                     "param"   89.5}]
         data [{"value" 1.0,
                  "id" 1.0}
                 {"value" 2.0,
@@ -96,6 +176,7 @@
                 {"value" 13.0,
                  "id" 13.0}]]
     (update-sheet! wb "IN" data :by "id")
-    (= result (get-sheet wb "IN"))))
+    (is (= in-result (get-sheet wb "IN")))
+    (is (= out-result (get-sheet wb "OUT")))))
 
 

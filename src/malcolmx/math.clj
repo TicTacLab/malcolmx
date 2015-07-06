@@ -5,7 +5,7 @@
                                                   PoissonDistribution
                                                   BinomialDistribution]
            [org.apache.poi.ss.formula.functions FreeRefFunction Fixed4ArgFunction Function Fixed3ArgFunction AggregateFunction]
-           [org.apache.poi.ss.formula.eval NumberEval StringEval OperandResolver ErrorEval RefEvalBase BoolEval]
+           [org.apache.poi.ss.formula.eval NumberEval StringEval OperandResolver ErrorEval RefEvalBase BoolEval ValueEval]
            [org.apache.poi.ss.formula.udf AggregatingUDFFinder DefaultUDFFinder]
            [org.apache.poi.ss.formula WorkbookEvaluator]
            [org.apache.poi.ss.usermodel Workbook]))
@@ -14,7 +14,7 @@
   (< 0.0 probability_s 1.0))
 
 (defn get-eval-value [value-eval]
-  (condp = (class value-eval)
+  (condp instance? value-eval
     ErrorEval {:error (.getErrorCode ^ErrorEval value-eval)}
     NumberEval (.getNumberValue ^NumberEval value-eval)
     BoolEval (.getBooleanValue ^BoolEval value-eval)
