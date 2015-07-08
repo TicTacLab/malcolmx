@@ -104,8 +104,10 @@
   (let [sheet (.getSheet workbook sheet-name)
         header (sheet-header sheet)
         evaluator (make-evaluator workbook)]
-    (map (fn [row]
-           (with-timer-when profile?
-             (zipmap header (map (partial cell-value evaluator)
-                                 row))))
-         (rest sheet))))
+    (->> sheet
+         (rest)
+         (map (fn [row]
+                (with-timer-when profile?
+                  (zipmap header (map (partial cell-value evaluator)
+                                      row)))))
+         (remove empty?))))
