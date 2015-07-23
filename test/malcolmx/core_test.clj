@@ -117,11 +117,11 @@
                      "market"  "ВПР Poisson_81", "mgp_code" "OTHER", "mgp_weight" 100.0,
                      "mn_code" "VPR_POISSON_81", "mn_weight" 13.0, "o_code" "B", "outcome" "B",
                      "param"   500.0}
-                    {"coef"    "formula error:36", "id" 13.0, "m_code" "MATCH_PROB",
+                    {"coef"    "#NUM!", "id" 13.0, "m_code" "MATCH_PROB",
                      "market"  "Match Probability", "mgp_code" "OTHER", "mgp_weight" 100.0,
                      "mn_code" "PROB", "mn_weight" 14.0, "o_code" "A", "outcome" "A",
                      "param"   999999.0}
-                    {"coef"    "formula error:36", "id" 14.0, "m_code" "MATCH_PROB",
+                    {"coef"    "#NUM!", "id" 14.0, "m_code" "MATCH_PROB",
                      "market"  "Match Probability", "mgp_code" "OTHER", "mgp_weight" 100.0,
                      "mn_code" "PROB", "mn_weight" 14.0, "o_code" "B", "outcome" "B",
                      "param"   999999.0}
