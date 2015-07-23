@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [malcolmx.math :as math])
-  (:import [org.apache.poi.ss.usermodel WorkbookFactory Workbook Sheet Cell Row FormulaEvaluator]
+  (:import [org.apache.poi.ss.usermodel WorkbookFactory Workbook Sheet Cell Row FormulaEvaluator FormulaError]
            [java.util List]
            [org.apache.poi.ss.util CellReference]))
 
@@ -23,10 +23,7 @@
       (.createFormulaEvaluator)))
 
 (defn error-code [code]
-  (condp = code
-    15 "VALUE!"
-    7  "DIV/0"
-    (str "formula error:" code )))
+  (.getString (FormulaError/forInt code)))
 
 (defn formula-cell-value
   "eval excel formulas"
