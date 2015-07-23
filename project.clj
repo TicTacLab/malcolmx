@@ -35,7 +35,8 @@
                                    [im.chit/vinyasa "0.3.4"]
                                    [org.clojure/tools.trace "0.7.8"]
                                    [ch.qos.logback/logback-core "1.1.2"]
-                                   [ch.qos.logback/logback-classic "1.1.2"]]
+                                   [ch.qos.logback/logback-classic "1.1.2"]
+                                   [org.clojure/core.typed "0.3.0"]]
 
                     :injections [(require '[vinyasa.inject :as inject])
                                  (require 'aprint.core)
