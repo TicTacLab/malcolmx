@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log]
             [malcolmx.math :as math]
             [clojure.core.typed :refer [ann non-nil-return] :as t])
-  (:import [org.apache.poi.ss.usermodel WorkbookFactory Workbook Sheet Cell Row FormulaEvaluator]
+  (:import [org.apache.poi.ss.usermodel WorkbookFactory Workbook Sheet Cell Row FormulaEvaluator FormulaError]
            [java.util List]
            [org.apache.poi.ss.util CellReference]
            [clojure.java.io IOFactory]
