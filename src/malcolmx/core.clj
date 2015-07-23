@@ -73,10 +73,7 @@
       (.createFormulaEvaluator)))
 
 (defn error-code [code]
-  (condp = code
-    15 "VALUE!"
-    7  "DIV/0"
-    (str "formula error:" code )))
+  (.getString (FormulaError/forInt code)))
 
 (defn formula-cell-value
   "eval excel formulas"
