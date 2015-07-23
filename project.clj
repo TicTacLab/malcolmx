@@ -14,6 +14,7 @@
                  [org.slf4j/slf4j-api "1.7.7"]
                  [org.clojure/tools.logging "0.3.1"]
                  [org.flatland/protobuf "0.8.1"]
+                 [org.clojure/core.typed "0.3.0"]
                  [com.google.protobuf/protobuf-java "2.5.0"]]
 
   :repositories ^:replace [["snapshots" {:url "http://nassau.favorit/repository/snapshots"
@@ -35,8 +36,7 @@
                                    [im.chit/vinyasa "0.3.4"]
                                    [org.clojure/tools.trace "0.7.8"]
                                    [ch.qos.logback/logback-core "1.1.2"]
-                                   [ch.qos.logback/logback-classic "1.1.2"]
-                                   [org.clojure/core.typed "0.3.0"]]
+                                   [ch.qos.logback/logback-classic "1.1.2"]]
 
                     :injections [(require '[vinyasa.inject :as inject])
                                  (require 'aprint.core)
