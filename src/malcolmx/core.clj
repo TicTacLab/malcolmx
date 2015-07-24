@@ -75,9 +75,7 @@
 (defn error-code [code]
   (.getString (FormulaError/forInt code)))
 
-(defn formula-cell-value
-  "eval excel formulas"
-  [^FormulaEvaluator evaluator ^Cell cell ]
+(defn cell-value [^FormulaEvaluator evaluator ^Cell cell]
   (try
     (let [cell-value (.evaluate evaluator cell)]
       (condp = (.getCellType cell-value)
@@ -90,20 +88,9 @@
     (catch Exception e
       (nil-return
         (log/errorf e "Can't evaluate\nCell: '%s!%s'\nFormula: '%s'\n"
-                   (.getSheetName (.getSheet cell))
-                   (.formatAsString (CellReference. (.getRowIndex cell) (.getColumnIndex cell)))
-                   (.getCellFormula cell))))))
-
-(defn cell-value [^FormulaEvaluator evaluator ^Cell cell]
-  (condp = (.getCellType cell)
-    Cell/CELL_TYPE_FORMULA (formula-cell-value evaluator cell)
-    Cell/CELL_TYPE_NUMERIC (.getNumericCellValue cell)
-    Cell/CELL_TYPE_STRING (.getStringCellValue cell)
-    Cell/CELL_TYPE_BOOLEAN (.getBooleanCellValue cell)
-    Cell/CELL_TYPE_ERROR (error-code (.getErrorCellValue cell))
-    Cell/CELL_TYPE_BLANK nil
-    (nil-return
-      (log/errorf "Undefined cell type: %" (.getCellType cell)))))
+                    (.getSheetName (.getSheet cell))
+                    (.formatAsString (CellReference. (.getRowIndex cell) (.getColumnIndex cell)))
+                    (.getCellFormula cell))))))
 
 
 (defmacro with-timer-when [profile? & body]
