@@ -8,8 +8,7 @@
            [org.apache.poi.ss.util CellReference]
            [clojure.java.io IOFactory]
            [java.io InputStream]
-           [clojure.lang Seqable Fn]
-           [clojure.core Vec]))
+           [clojure.lang Seqable]))
 
 (defmacro nil-return [& body]
   `(do (t/tc-ignore ~@body)
@@ -25,6 +24,8 @@
 (non-nil-return org.apache.poi.ss.usermodel.CreationHelper/createFormulaEvaluator :all)
 (non-nil-return org.apache.poi.ss.usermodel.FormulaEvaluator/evaluate :all)
 (non-nil-return org.apache.poi.ss.usermodel.CellValue/getStringValue :all)
+(non-nil-return org.apache.poi.ss.usermodel.FormulaError/forInt :all)
+(non-nil-return org.apache.poi.ss.usermodel.FormulaError/getString :all)
 
 (t/defalias ColumnName String)
 (t/defalias CellValue (t/U Number String Boolean nil))
@@ -72,9 +73,11 @@
       (.getCreationHelper)
       (.createFormulaEvaluator)))
 
+(ann error-code [Byte -> String])
 (defn error-code [code]
   (.getString (FormulaError/forInt code)))
 
+(ann cell-value [FormulaEvaluator Cell -> CellValue])
 (defn cell-value [^FormulaEvaluator evaluator ^Cell cell]
   (try
     (let [cell-value (.evaluate evaluator cell)]
