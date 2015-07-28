@@ -8,7 +8,7 @@
            [org.apache.poi.ss.util CellReference]
            [clojure.java.io IOFactory]
            [java.io InputStream]
-           [clojure.lang Seqable]))
+           [clojure.lang Seqable Fn]))
 
 (defmacro nil-return [& body]
   `(do (t/tc-ignore ~@body)
@@ -34,9 +34,13 @@
 (t/defalias Header (t/Vec ColumnName))
 (t/defalias SheetName String)
 
-(ann ^:no-check get-cells [Row -> (Seqable Cell)])
-(defn get-cells [row]
-  (seq row))
+(ann ^:no-check get-cells (Fn [Row -> (Seqable Cell)]
+                              [Row Number -> (Seqable (t/U Cell nil))]))
+(defn get-cells
+  ([^Row row]
+   (seq row))
+  ([^Row row cell-count]
+   (map #(.getCell row %) (range cell-count))))
 
 (ann ^:no-check get-rows [Sheet -> (Seqable Row)])
 (defn get-rows [sheet]
@@ -47,8 +51,8 @@
   (.indexOf ^List header column-name))
 
 (ann ^:no-check set-cell-value [Cell CellValue -> nil])
-(defn set-cell-value [cell value]
-  (.setCellValue ^Cell cell value))
+(defn set-cell-value [^Cell cell value]
+  (.setCellValue cell value))
 
 (ann sheet-header [Sheet -> Header])
 (defn sheet-header [^Sheet sheet]
@@ -60,10 +64,11 @@
 
 (ann set-row! [Row Header RowData -> nil])
 (defn set-row! [^Row row header row-data]
-  (mapv (t/fn [^Cell cell :- Cell header-name :- ColumnName] :- nil
-          (when-let [value (get row-data header-name)]
-            (set-cell-value cell value)))
-        (get-cells row) header)
+  (mapv (t/fn [^Cell cell :- (t/U Cell nil) header-name :- ColumnName] :- nil
+          (when cell
+            (when-let [value (get row-data header-name)]
+              (set-cell-value cell value))))
+        (get-cells row (count header)) header)
   nil)
 
 (ann make-evaluator [Workbook -> FormulaEvaluator])
@@ -80,20 +85,22 @@
 (ann cell-value [FormulaEvaluator Cell -> CellValue])
 (defn cell-value [^FormulaEvaluator evaluator ^Cell cell]
   (try
-    (let [cell-value (.evaluate evaluator cell)]
-      (condp = (.getCellType cell-value)
-        Cell/CELL_TYPE_NUMERIC (.getNumberValue cell-value)
-        Cell/CELL_TYPE_STRING (.getStringValue cell-value)
-        Cell/CELL_TYPE_BOOLEAN (.getBooleanValue cell-value)
-        Cell/CELL_TYPE_ERROR (error-code (.getErrorValue cell-value))
-        (nil-return
-          (t/tc-ignore (log/errorf "Undefined cell type: %" (.getCellType cell-value))))))
+    (when cell
+      (when-let [cell-value (.evaluate evaluator cell)]
+        (condp = (.getCellType cell-value)
+          Cell/CELL_TYPE_NUMERIC (.getNumberValue cell-value)
+          Cell/CELL_TYPE_STRING (.getStringValue cell-value)
+          Cell/CELL_TYPE_BOOLEAN (.getBooleanValue cell-value)
+          Cell/CELL_TYPE_ERROR (error-code (.getErrorValue cell-value))
+          Cell/CELL_TYPE_BLANK nil                          ;; this clause, actually, unreacable, because eveluator returns nil as cell-value for this cell type. Here just for readablility
+          (nil-return
+            (log/errorf "Undefined cell type: %" (.getCellType cell-value))))))
     (catch Exception e
       (nil-return
-        (log/errorf e "Can't evaluate\nCell: '%s!%s'\nFormula: '%s'\n"
+        (log/errorf e "Can't evaluate\nCell: '%s!%s'\nValue: '%s'\n"
                     (.getSheetName (.getSheet cell))
                     (.formatAsString (CellReference. (.getRowIndex cell) (.getColumnIndex cell)))
-                    (.getCellFormula cell))))))
+                    (str cell))))))
 
 
 (defmacro with-timer-when [profile? & body]
@@ -171,8 +178,9 @@
            (map (t/fn [row :- Row] :- RowData
                   (with-timer-when profile?
                     (make-row-data header
-                                   (map (partial cell-value evaluator)
-                                        (get-cells row))))))
+                                   (map (t/fn [^Cell cell :- (t/U Cell nil)] :- CellValue
+                                          (when cell (cell-value evaluator cell)))
+                                        (get-cells row (count header)))))))
            (remove empty?)))
     (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
                                              :workbook   workbook}))))

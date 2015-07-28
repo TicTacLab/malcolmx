@@ -2,6 +2,20 @@
   (:require [clojure.test :refer :all]
             [malcolmx.core :refer :all]))
 
+(deftest empty-cells-test
+  (let [wb (parse "test/malcolmx/empty-cells.xlsx")
+        out-result [{"id" 1.0, "outcome" 10.0, "param" 111.0}
+                    {"id" 2.0, "outcome" 9.0, "param" "    "}
+                    {"id" 3.0, "outcome" 8.0, "param" 222.0}
+                    {"id" 4.0, "outcome" 7.0, "param" nil}
+                    {"id" 5.0, "outcome" 6.0, "param" 333.0}
+                    {"id" 6.0, "outcome" 5.0, "param" nil}
+                    {"id" 7.0, "outcome" 4.0, "param" 444.0}
+                    {"id" 8.0, "outcome" 3.0, "param" nil}
+                    {"id" 9.0, "outcome" 2.0, "param" 555.0}
+                    {"id" 10.0, "outcome" 1.0, "param" nil}]]
+    (is (= out-result (get-sheet wb "OUT")))))
+
 (deftest super-test
   (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
         in-result [{"code" "P_SCORE_A_PART_1",
