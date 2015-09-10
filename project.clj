@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [com.betinvest/poi "3.11-20150430"]
+                 [com.betinvest/poi "3.11-20150910"]
                  [org.apache.poi/poi-ooxml "3.11" :exclusions [org.apache.poi/poi]]
                  [org.apache.poi/poi-ooxml-schemas "3.11" :exclusions [org.apache.poi/poi]]
                  [commons-codec/commons-codec "1.9"]
