@@ -80,7 +80,7 @@
 
 (ann error-code [Byte -> String])
 (defn error-code [code]
-  (.getString (FormulaError/forInt code)))
+  (.getString (FormulaError/forInt ^byte code)))
 
 (ann cell-value [FormulaEvaluator Cell -> CellValue])
 (defn cell-value [^FormulaEvaluator evaluator ^Cell cell]
