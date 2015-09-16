@@ -17,10 +17,10 @@
                  [org.clojure/core.typed "0.3.0"]
                  [com.google.protobuf/protobuf-java "2.5.0"]]
 
-  :repositories ^:replace [["snapshots" {:url "http://nassau.favorit/repository/snapshots"
+  :repositories ^:replace [["snapshots" {:url "http://52.28.244.218:8080/repository/snapshots"
                                          :username :env
                                          :password :env}]
-                           ["releases" {:url "http://nassau.favorit/repository/internal"
+                           ["releases" {:url "http://52.28.244.218:8080/repository/internal"
                                         :username :env
                                         :password :env}]]
   :plugins [[lein-ring "0.8.2"]
