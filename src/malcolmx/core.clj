@@ -184,3 +184,10 @@
            (remove empty?)))
     (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
                                              :workbook   workbook}))))
+
+(ann get-sheet-header [Workbook SheetName -> Header])
+(defn get-sheet-header [^Workbook workbook sheet-name]
+  (if-let [sheet (.getSheet workbook sheet-name)]
+    (sheet-header sheet)
+    (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
+                                             :workbook   workbook}))))

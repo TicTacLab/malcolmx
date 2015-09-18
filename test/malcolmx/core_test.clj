@@ -16,6 +16,21 @@
                     {"id" 10.0, "outcome" 1.0, "param" nil}]]
     (is (= out-result (get-sheet wb "OUT")))))
 
+(deftest header-extraction-test
+  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        header ["id"
+                "market"
+                "outcome"
+                "coef"
+                "param"
+                "m_code"
+                "o_code"
+                "mgp_code"
+                "mn_code"
+                "mgp_weight"
+                "mn_weight"]]
+    (is (= header (get-sheet-header wb "OUT")))))
+
 (deftest super-test
   (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
         in-result [{"code" "P_SCORE_A_PART_1",
