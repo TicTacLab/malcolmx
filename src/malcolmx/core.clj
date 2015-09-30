@@ -2,16 +2,16 @@
   (:require [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [malcolmx.math :as math]
-            [clojure.core.typed :refer [ann non-nil-return] :as t]
-            [clojure.string :as string])
+            [clojure.core.typed :refer [ann non-nil-return] :as t])
   (:import [org.apache.poi.ss.usermodel WorkbookFactory Workbook Sheet Cell Row FormulaEvaluator FormulaError]
            [java.util List]
            [org.apache.poi.ss.util CellReference]
            [clojure.java.io IOFactory]
-           [java.io InputStream File FileInputStream BufferedInputStream]
+           [java.io InputStream BufferedInputStream]
            [clojure.lang Seqable Fn]
            (org.apache.poi POIXMLDocument)
-           (org.apache.poi.poifs.filesystem POIFSFileSystem)))
+           (org.apache.poi.poifs.filesystem POIFSFileSystem)
+           (java.lang.reflect Array)))
 
 (defmacro nil-return [& body]
   `(do (t/tc-ignore ~@body)
@@ -182,11 +182,9 @@
     (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
                                              :workbook   workbook}))))
 
-(ann excel-file? [File -> Boolean])
-(defn excel-file? [^File f]
-  (let [ext (last (string/split (.getName f) #"\."))
-        is (BufferedInputStream. (FileInputStream. f))]
-    (cond
-      (= ext "xls")  (POIFSFileSystem/hasPOIFSHeader is)
-      (= ext "xlsx") (POIXMLDocument/hasOOXMLHeader is)
-      :else           false)))
+(ann excel-file? [(Array Byte) String -> Boolean])
+(defn excel-file? [^BufferedInputStream is type]
+  (case type
+    "xls" (POIFSFileSystem/hasPOIFSHeader is)
+    "xlsx" (POIXMLDocument/hasOOXMLHeader is)
+    :else false))

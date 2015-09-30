@@ -1,14 +1,14 @@
 (ns malcolmx.core-test
   (:require [clojure.test :refer :all]
             [malcolmx.core :refer :all])
-  (:import (java.io File)))
+  (:import (java.io File BufferedInputStream FileInputStream)))
 
  (deftest excel-file-test
-   (is (= true (excel-file? (File. "test/malcolmx/Bolvanka.xlsx")))
+   (is (= true (excel-file? (BufferedInputStream. (FileInputStream. (File. "test/malcolmx/Bolvanka.xlsx"))) "xlsx"))
        "Should determine file type")
-   (is (= true (excel-file? (File. "test/malcolmx/Bolvanka.xls")))
+   (is (= true (excel-file? (BufferedInputStream. (FileInputStream. (File. "test/malcolmx/Bolvanka.xls"))) "xls"))
        "Should determine file type")
-   (is (= false (excel-file? (File. *file*)))
+   (is (= false (excel-file? (BufferedInputStream. (FileInputStream. (File. *file*))) "xls"))
        "Should not determine file type"))
 
 (deftest empty-cells-test
