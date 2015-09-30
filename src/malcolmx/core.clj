@@ -2,30 +2,20 @@
   (:require [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [malcolmx.math :as math]
-            [clojure.core.typed :refer [ann non-nil-return] :as t])
+            [clojure.core.typed :refer [ann non-nil-return] :as t]
+            [clojure.string :as string])
   (:import [org.apache.poi.ss.usermodel WorkbookFactory Workbook Sheet Cell Row FormulaEvaluator FormulaError]
            [java.util List]
            [org.apache.poi.ss.util CellReference]
            [clojure.java.io IOFactory]
-           [java.io InputStream]
-           [clojure.lang Seqable Fn]))
+           [java.io InputStream File FileInputStream BufferedInputStream]
+           [clojure.lang Seqable Fn]
+           (org.apache.poi POIXMLDocument)
+           (org.apache.poi.poifs.filesystem POIFSFileSystem)))
 
 (defmacro nil-return [& body]
   `(do (t/tc-ignore ~@body)
       nil))
-
-(ann clojure.core/iterator-seq (t/All [x] [(Iterable x) -> (Seqable x)]))
-(ann malcolmx.math/register-udf-funs! [Workbook -> t/Nothing])
-
-(non-nil-return org.apache.poi.ss.usermodel.WorkbookFactory/create :all)
-(non-nil-return org.apache.poi.ss.usermodel.Cell/getStringCellValue :all)
-(non-nil-return org.apache.poi.ss.usermodel.Cell/getSheet :all)
-(non-nil-return org.apache.poi.ss.usermodel.Workbook/getCreationHelper :all)
-(non-nil-return org.apache.poi.ss.usermodel.CreationHelper/createFormulaEvaluator :all)
-(non-nil-return org.apache.poi.ss.usermodel.FormulaEvaluator/evaluate :all)
-(non-nil-return org.apache.poi.ss.usermodel.CellValue/getStringValue :all)
-(non-nil-return org.apache.poi.ss.usermodel.FormulaError/forInt :all)
-(non-nil-return org.apache.poi.ss.usermodel.FormulaError/getString :all)
 
 (t/defalias ColumnName String)
 (t/defalias CellValue (t/U Number String Boolean nil))
@@ -191,3 +181,12 @@
     (sheet-header sheet)
     (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
                                              :workbook   workbook}))))
+
+(ann excel-file? [File -> Boolean])
+(defn excel-file? [^File f]
+  (let [ext (last (string/split (.getName f) #"\."))
+        is (BufferedInputStream. (FileInputStream. f))]
+    (cond
+      (= ext "xls")  (POIFSFileSystem/hasPOIFSHeader is)
+      (= ext "xlsx") (POIXMLDocument/hasOOXMLHeader is)
+      :else           false)))
