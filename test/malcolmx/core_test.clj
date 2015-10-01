@@ -11,6 +11,10 @@
    (is (= false (excel-file? (BufferedInputStream. (FileInputStream. (File. *file*))) "xls"))
        "Should not determine file type"))
 
+(deftest get-sheets-names-test
+  (is (= ["IN" "OUT" "Markets" "Dist_300" "Dist_80" "Total 5Set" "+&СУММ" "Лист1" "ВПР" "Prob"]
+         (get-sheets-names (parse "test/malcolmx/Bolvanka.xls")))))
+
 (deftest empty-cells-test
   (let [wb (parse "test/malcolmx/empty-cells.xlsx")
         out-result [{"id" 1.0, "outcome" 10.0, "param" 111.0}

@@ -23,6 +23,7 @@
 (t/defalias SheetData (Seqable RowData))
 (t/defalias Header (t/Vec ColumnName))
 (t/defalias SheetName String)
+(t/defalias SheetNames [SheetName])
 
 (ann ^:no-check get-cells (Fn [Row -> (Seqable Cell)]
                               [Row Number -> (Seqable (t/U Cell nil))]))
@@ -188,3 +189,9 @@
     "xls" (POIFSFileSystem/hasPOIFSHeader is)
     "xlsx" (POIXMLDocument/hasOOXMLHeader is)
     :else false))
+
+(ann get-sheets-names [Workbook -> SheetNames])
+(defn get-sheets-names [^Workbook workbook]
+  (->> (range (.getNumberOfSheets workbook))
+       (map #(.getSheetAt workbook ^int %))
+       (map #(.getSheetName ^Sheet %))))
