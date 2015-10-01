@@ -9,7 +9,6 @@
                  [org.apache.poi/poi-ooxml-schemas "3.12" :exclusions [org.apache.poi/poi]]
                  [commons-codec/commons-codec "1.9"]
                  [org.apache.xmlbeans/xmlbeans "2.6.0"]
-                 [dom4j/dom4j "1.6.1"]
                  [org.apache.commons/commons-math3 "3.1.1"]
                  [org.slf4j/slf4j-api "1.7.7"]
                  [org.clojure/tools.logging "0.3.1"]
