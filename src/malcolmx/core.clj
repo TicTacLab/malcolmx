@@ -157,7 +157,6 @@
       workbook)
     (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
                                              :workbook   workbook}))))
-
 (ann get-sheet [Workbook SheetName & :optional {:profile? Boolean} -> SheetData])
 (defn get-sheet [^Workbook workbook sheet-name & {profile? :profile?}]
   (if-let [sheet (.getSheet workbook sheet-name)]
@@ -195,3 +194,31 @@
   (->> (range (.getNumberOfSheets workbook))
        (map #(.getSheetAt workbook ^int %))
        (map #(.getSheetName ^Sheet %))))
+
+
+(defn create-cell [sheet row-index column-index]
+  (-> sheet
+      (.createRow  row-index)
+      (.createCell column-index)))
+
+(defn get-cell [workbook sheet-name row-index column-index]
+  (let [cell (-> workbook
+                 (.getSheet sheet-name)
+                 (.getRow row-index)
+                 (.getCell column-index)
+                 )]
+    (cell-value (make-evaluator workbook) cell)))
+
+(defn ^Workbook set-cells!
+  "set cell value by row and column indexes
+  example of new-sheet-data:
+  [[0 0 \"a\"][1 1 \"b\"] - Set A1 -> a B2 -> b "
+  [^Workbook workbook sheet-name new-sheet-data]
+  (doseq [cell-data new-sheet-data]
+    (if-let [sheet (.getSheet workbook sheet-name)]
+      (let [[row-id coll-id cell-value] cell-data
+            cell (create-cell sheet row-id coll-id)]
+        (.setCellValue cell cell-value))
+      (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
+                                               :workbook   workbook}))))
+  workbook)

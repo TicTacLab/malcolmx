@@ -221,4 +221,11 @@
     (is (= in-result (get-sheet wb "IN")))
     (is (= out-result (get-sheet wb "OUT")))))
 
+(deftest set-cells!-test
+  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        data [[0 0 "a"] [1 1 "b"]]
+        wb1 (set-cells! wb "EventLog" data)]
+    (is (= "a" (get-cell wb1 "EventLog" 0 0))
+        (= "b" (get-cell wb1 "EventLog" 1 1)))
+    ))
 
