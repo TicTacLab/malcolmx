@@ -196,6 +196,9 @@
        (map #(.getSheetName ^Sheet %))))
 
 
+(defn get-last-row-index [sheet]
+  (.getLastRowNum sheet))
+
 (defn create-cell [sheet row-index column-index]
   (-> sheet
       (.createRow  row-index)
@@ -205,11 +208,10 @@
   (let [cell (-> workbook
                  (.getSheet sheet-name)
                  (.getRow row-index)
-                 (.getCell column-index)
-                 )]
+                 (.getCell column-index))]
     (cell-value (make-evaluator workbook) cell)))
 
-(defn ^Workbook set-cells!
+(defn set-cells!
   "set cell value by row and column indexes
   example of new-sheet-data:
   [[0 0 \"a\"][1 1 \"b\"] - Set A1 -> a B2 -> b "
@@ -220,5 +222,26 @@
             cell (create-cell sheet row-id coll-id)]
         (.setCellValue cell cell-value))
       (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
-                                               :workbook   workbook}))))
-  workbook)
+                                               :workbook   workbook})))))
+
+(defn index-offset
+  ([data] (range (count data)))
+  ([data offset]
+   (range offset (+ offset (count data)))))
+
+(defn add-address
+  ([data] (add-address data 0))
+  ([data row-offset]
+   (into [] (mapcat (fn [row row-index]
+                     (mapv (fn [cell cell-index]
+                             [row-index cell-index cell])
+                           row (index-offset row)))
+                   data
+                   (index-offset data row-offset)))))
+
+(defn ^Workbook append-rows!
+  [^Workbook workbook sheet-name new-sheet-data]
+  (let [sheet (.getSheet workbook sheet-name)
+        row-offset (inc (get-last-row-index sheet))
+        new-sheet-data-with-addresses (add-address new-sheet-data row-offset)]
+    (set-cells! workbook sheet-name new-sheet-data-with-addresses)))

@@ -221,11 +221,38 @@
     (is (= in-result (get-sheet wb "IN")))
     (is (= out-result (get-sheet wb "OUT")))))
 
-(deftest set-cells!-test
+(deftest set-cells-by-address!-test
   (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
-        data [[0 0 "a"] [1 1 "b"]]
-        wb1 (set-cells! wb "EventLog" data)]
-    (is (= "a" (get-cell wb1 "EventLog" 0 0))
-        (= "b" (get-cell wb1 "EventLog" 1 1)))
+        data [[0 0 "a1"] [0 1 "b1"]
+              [1 0 "a2"] [1 1 "b2"]
+              [3 0 "a3"]]
+        ]
+    (is (= "id" (get-cell wb "EventLog" 0 0)))
+    (is (= "value" (get-cell wb "EventLog" 0 1)))
+    (set-cells! wb "EventLog" data)
+    (is (= "a1" (get-cell wb "EventLog" 0 0)))
+    (is (= "b1" (get-cell wb "EventLog" 0 1)))
+    (is (= "a2" (get-cell wb "EventLog" 1 0)))
+    (is (= "b2" (get-cell wb "EventLog" 1 1)))
+    (is (= "a3" (get-cell wb "EventLog" 3 0)))
+    (is (= 3 (get-last-row-index (.getSheet wb "EventLog"))))
+    ))
+
+(deftest append-rows!-test
+  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        data [["a1" "b1"]
+              ["a2" "b2"]]
+        data-addr [[1 0 "a1"] [1 1 "b1"]
+                   [2 0 "a2"] [2 1 "b2"]]
+        result-data (add-address data 1)]
+    (is (= data-addr result-data))
+    (append-rows! wb "EventLog" data)
+    (is (= 2 (get-last-row-index (.getSheet wb "EventLog"))))
+    (is (= "id" (get-cell wb "EventLog" 0 0)))
+    (is (= "value" (get-cell wb "EventLog" 0 1)))
+    (is (= "a1" (get-cell wb "EventLog" 1 0)))
+    (is (= "b1" (get-cell wb "EventLog" 1 1)))
+    (is (= "a2" (get-cell wb "EventLog" 2 0)))
+    (is (= "b2" (get-cell wb "EventLog" 2 1)))
     ))
 
