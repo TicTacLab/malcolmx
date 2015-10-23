@@ -221,38 +221,82 @@
     (is (= in-result (get-sheet wb "IN")))
     (is (= out-result (get-sheet wb "OUT")))))
 
+(deftest create-cell!-test
+  (let  [wb (parse "test/malcolmx/Bolvanka.xlsx")
+         sheet-name "EventLog"
+         sheet (.getSheet wb sheet-name)]
+    (is (= "id" (get-cell-value wb sheet-name 0 0)))
+    (create-cell! sheet 0 0)
+    (is (= (nil? (get-cell-value wb sheet-name 0 0))))))
+
 (deftest set-cells-by-address!-test
   (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        sheet-name "EventLog"
         data [[0 0 "a1"] [0 1 "b1"]
               [1 0 "a2"] [1 1 "b2"]
               [3 0 "a3"]]
         ]
-    (is (= "id" (get-cell wb "EventLog" 0 0)))
-    (is (= "value" (get-cell wb "EventLog" 0 1)))
-    (set-cells! wb "EventLog" data)
-    (is (= "a1" (get-cell wb "EventLog" 0 0)))
-    (is (= "b1" (get-cell wb "EventLog" 0 1)))
-    (is (= "a2" (get-cell wb "EventLog" 1 0)))
-    (is (= "b2" (get-cell wb "EventLog" 1 1)))
-    (is (= "a3" (get-cell wb "EventLog" 3 0)))
-    (is (= 3 (get-last-row-index (.getSheet wb "EventLog"))))
+    (is (= "id" (get-cell-value wb sheet-name 0 0)))
+    (is (= "value" (get-cell-value wb sheet-name 0 1)))
+    (is (= "a2" (get-cell-value wb sheet-name 1 0)))
+    (is (= "b2" (get-cell-value wb sheet-name 1 1)))
+    (is (= "a3" (get-cell-value wb sheet-name 2 0)))
+    (is (= "b3" (get-cell-value wb sheet-name 2 1)))
+    (is (nil?   (get-cell-value wb sheet-name 3 1)))
+    (set-cells! wb sheet-name data)
+    (is (= "a1" (get-cell-value wb sheet-name 0 0)))
+    (is (= "a2" (get-cell-value wb sheet-name 1 0)))
+    (is (= "b1" (get-cell-value wb sheet-name 0 1)))
+    (is (= "b2" (get-cell-value wb sheet-name 1 1)))
+    (is (= "a3" (get-cell-value wb sheet-name 2 0)))
     ))
 
 (deftest append-rows!-test
   (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        sheet-name "EventLog"
         data [["a1" "b1"]
               ["a2" "b2"]]
         data-addr [[1 0 "a1"] [1 1 "b1"]
                    [2 0 "a2"] [2 1 "b2"]]
         result-data (add-address data 1)]
     (is (= data-addr result-data))
-    (append-rows! wb "EventLog" data)
-    (is (= 2 (get-last-row-index (.getSheet wb "EventLog"))))
-    (is (= "id" (get-cell wb "EventLog" 0 0)))
-    (is (= "value" (get-cell wb "EventLog" 0 1)))
-    (is (= "a1" (get-cell wb "EventLog" 1 0)))
-    (is (= "b1" (get-cell wb "EventLog" 1 1)))
-    (is (= "a2" (get-cell wb "EventLog" 2 0)))
-    (is (= "b2" (get-cell wb "EventLog" 2 1)))
+    (append-rows! wb sheet-name data)
+    (is (= "id" (get-cell-value wb sheet-name 0 0)))
+    (is (= "value" (get-cell-value wb sheet-name 0 1)))
+    (is (= "a2" (get-cell-value wb sheet-name 1 0)))
+    (is (= "a3" (get-cell-value wb sheet-name 2 0)))
+    (is (= "b2" (get-cell-value wb sheet-name 1 1)))
+    (is (= "b3" (get-cell-value wb sheet-name 2 1)))
     ))
 
+(deftest remove-all-rows!-test
+  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        sheet-name "EventLog"]
+    (is (= 2 (get-last-row-index (.getSheet wb sheet-name))))
+    (remove-rows! wb sheet-name)
+    (is (zero? (get-last-row-index (.getSheet wb sheet-name))))))
+
+(deftest remove-offset-rows!-test
+  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        sheet-name "EventLog"]
+    (is (= 2 (get-last-row-index (.getSheet wb sheet-name))))
+    (remove-rows! wb sheet-name 2)
+    (is (= 1 (get-last-row-index (.getSheet wb sheet-name))))))
+
+(deftest set-rows!-test
+  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        sheet-name "EventLog"
+        data [["a1" "b1"]
+              ["a2" "b2"]]
+        data-addr [[1 0 "a1"] [1 1 "b1"]
+                   [2 0 "a2"] [2 1 "b2"]]
+        result-data (add-address data 1)]
+    (is (= data-addr result-data))
+    (set-rows! wb sheet-name data)
+    (is (= "id" (get-cell-value wb sheet-name 0 0)))
+    (is (= "value" (get-cell-value wb sheet-name 0 1)))
+    (is (= "a1" (get-cell-value wb sheet-name 1 0)))
+    (is (= "a2" (get-cell-value wb sheet-name 2 0)))
+    (is (= "b1" (get-cell-value wb sheet-name 1 1)))
+    (is (= "b2" (get-cell-value wb sheet-name 2 1)))
+    ))
