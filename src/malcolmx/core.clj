@@ -209,14 +209,21 @@
   (when-let [cell (get-cell workbook sheet-name row-index column-index)]
     (cell-value (make-evaluator workbook) cell)))
 
+(defn rewrite-row! [sheet row-number]
+  (.createRow sheet row-number))
+
+(defn create-row!
+  ;; Safe return clean of existent row
+  [sheet row-index]
+  (if-let [row (.getRow sheet row-index)]
+    row
+    (.createRow sheet row-index)))
+
 (defn create-cell! [sheet row-index column-index]
-  (when-let [cell (some-> sheet
-                      (.getRow row-index)
-                      (.getCell column-index))]
-    (.removeCell (.getRow sheet row-index) cell))
-  (-> sheet
-      (.createRow row-index)
-      (.createCell column-index)))
+  (let [row (create-row! sheet row-index)]
+    (when-let [cell (.getCell row column-index)]
+      (.removeCell row cell))
+    (.createCell row column-index)))
 
 (defn set-cells!
   "set cell value by row and column indexes
@@ -248,27 +255,22 @@
 (defn append-rows!
   [^Workbook workbook sheet-name new-sheet-data]
   (let [sheet (.getSheet workbook sheet-name)
-        row-offset (inc (get-last-row-index sheet))
+        row-offset (dec (get-last-row-index sheet))
         new-sheet-data-with-addresses (add-address new-sheet-data row-offset)]
     (set-cells! workbook sheet-name new-sheet-data-with-addresses)))
 
-(defn remove-row! [sheet row-number]
-  (when-let [row (.getRow sheet row-number)]
-    (.removeRow sheet row)))
-
-(defn remove-rows!
+(defn create-rows!
   ([^Workbook workbook sheet-name]
-    (remove-rows! workbook sheet-name 0))
+   (create-rows! workbook sheet-name 0))
   ([^Workbook workbook sheet-name row-offset]
    (let [sheet (.getSheet workbook sheet-name)
          last-row (inc (get-last-row-index sheet))]
      (doseq [row-number (range row-offset last-row)]
-       (remove-row! sheet row-number)))))
+       ;; rows must be overwritten
+       (rewrite-row! sheet row-number)))))
 
 (defn set-rows!
   [^Workbook workbook sheet-name new-sheet-data]
-  (let [sheet (.getSheet workbook sheet-name)
-        row-offset (inc (get-last-row-index sheet))
-        new-sheet-data-with-addresses (add-address new-sheet-data row-offset)]
-    (remove-rows! workbook sheet-name 1)
-    (set-cells! workbook sheet-name new-sheet-data-with-addresses)))
+  (let [sheet (.getSheet workbook sheet-name)]
+    (create-rows! workbook sheet-name)
+    (set-cells! workbook sheet-name (add-address new-sheet-data))))
