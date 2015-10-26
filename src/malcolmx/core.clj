@@ -225,9 +225,6 @@
   (when-let [cell (get-cell workbook sheet-name row-index column-index)]
     (cell-value (make-evaluator workbook) cell)))
 
-(defn rewrite-row! [sheet row-number]
-  (.createRow sheet row-number))
-
 (defn create-row!
   ;; Safe return clean of existent row
   [sheet row-index]
@@ -283,10 +280,20 @@
          last-row (inc (get-last-row-index sheet))]
      (doseq [row-number (range row-offset last-row)]
        ;; rows must be overwritten
-       (rewrite-row! sheet row-number)))))
+       (.createRow sheet row-number)))))
+
+(defn remove-rows!
+  ([^Workbook workbook sheet-name]
+   (remove-rows! workbook sheet-name 0))
+  ([^Workbook workbook sheet-name row-offset]
+   (let [sheet (.getSheet workbook sheet-name)
+         last-row (inc (get-last-row-index sheet))]
+     (doseq [row-number (range row-offset last-row)]
+       (when-let [row (.getRow sheet row-number)]
+         (.removeRow sheet row))))))
 
 (defn set-rows!
   [^Workbook workbook sheet-name new-sheet-data]
   (let [sheet (.getSheet workbook sheet-name)]
-    (create-rows! workbook sheet-name)
+    (remove-rows! workbook sheet-name)
     (set-cells! workbook sheet-name (add-address new-sheet-data))))
