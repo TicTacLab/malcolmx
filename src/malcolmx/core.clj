@@ -25,6 +25,22 @@
 (t/defalias SheetName String)
 (t/defalias SheetNames [SheetName])
 
+
+(defprotocol CellProtocol
+  (set-value [this] "set cell value"))
+
+(extend-protocol CellProtocol
+  Long
+  (set-value [this] (double this))
+  Float
+  (set-value [this] (double this))
+  Double
+  (set-value [this] this)
+  String
+  (set-value [this] this)
+  nil
+  (set-value [_] ""))
+
 (ann ^:no-check get-cells (Fn [Row -> (Seqable Cell)]
                               [Row Number -> (Seqable (t/U Cell nil))]))
 (defn get-cells
@@ -43,7 +59,7 @@
 
 (ann ^:no-check set-cell-value [Cell CellValue -> nil])
 (defn set-cell-value [^Cell cell value]
-  (.setCellValue cell value))
+  (.setCellValue cell (set-value value)))
 
 (ann sheet-header [Sheet -> Header])
 (defn sheet-header [^Sheet sheet]
@@ -234,7 +250,7 @@
     (if-let [sheet (.getSheet workbook sheet-name)]
       (let [[row-id coll-id cell-value] cell-data
             cell (create-cell! sheet row-id coll-id)]
-        (.setCellValue cell cell-value))
+        (set-cell-value cell cell-value))
       (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
                                                :workbook   workbook})))))
 (defn index-offset
