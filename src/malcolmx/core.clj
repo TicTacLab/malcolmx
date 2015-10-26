@@ -271,7 +271,6 @@
   (let [sheet (.getSheet workbook sheet-name)
         row-offset (count-rows sheet)
         new-sheet-data-with-addresses (add-address new-sheet-data row-offset)]
-    (>trace new-sheet-data-with-addresses)
     (set-cells! workbook sheet-name new-sheet-data-with-addresses)))
 
 (defn create-rows!
