@@ -234,22 +234,22 @@
 (deftest clean-all-rows!-test
   (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
         sheet-name "EventLog"]
-    (is (= 2 (get-last-row-index (.getSheet wb sheet-name))))
-    (create-rows! wb sheet-name)
+    (is (= 3 (count-rows (.getSheet wb sheet-name))))
+    (remove-rows! wb sheet-name)
     (is (nil? (get-cell-value wb sheet-name 0 0)))
     (is (nil? (get-cell-value wb sheet-name 0 1)))
     (is (nil? (get-cell-value wb sheet-name 1 0)))
     (is (nil? (get-cell-value wb sheet-name 1 1)))
     (is (nil? (get-cell-value wb sheet-name 2 0)))
     (is (nil? (get-cell-value wb sheet-name 2 1)))
-    (is (= 2 (get-last-row-index (.getSheet wb sheet-name))))))
+    (is (= 0 (count-rows (.getSheet wb sheet-name))))))
 
 (deftest clean-offset-rows!-test
   (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
         sheet-name "EventLog"]
-    (is (= 2 (get-last-row-index (.getSheet wb sheet-name))))
+    (is (= 3 (count-rows (.getSheet wb sheet-name))))
     (remove-rows! wb sheet-name 1)
-    (is (= 0 (get-last-row-index (.getSheet wb sheet-name))))
+    (is (= 1 (count-rows (.getSheet wb sheet-name))))
     (is (= "id" (get-cell-value wb sheet-name 0 0)))
     (is (= "value" (get-cell-value wb sheet-name 0 1)))
     (is (nil? (get-cell-value wb sheet-name 1 0)))
@@ -294,6 +294,7 @@
               ["a2" "b2" nil]
               ["a3" "b3" 3]
               ["a4" "b4" ""]]        ]
+    (remove-rows! wb sheet-name 1)
     (append-rows! wb sheet-name data)
     ;; head
     (is (= "id" (get-cell-value wb sheet-name 0 0)))
@@ -311,26 +312,4 @@
     (is (= "a4" (get-cell-value wb sheet-name 4 0)))
     (is (= "b4" (get-cell-value wb sheet-name 4 1)))
     (is (= "" (get-cell-value wb sheet-name 4 2)))
-    ))
-
-(deftest set-rows!-test
-  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
-        sheet-name "EventLog"
-        data [["a1" "b1" 1]
-              ["a2" "b2" nil]
-              ["a3" "b3" 1.0]
-              ["a4" "b4" ""]]]
-    (set-rows! wb sheet-name data)
-    (is (= "a1" (get-cell-value wb sheet-name 0 0)))
-    (is (= "b1" (get-cell-value wb sheet-name 0 1)))
-    (is (= 1.0 (get-cell-value wb sheet-name 0 2)))
-    (is (= "a2" (get-cell-value wb sheet-name 1 0)))
-    (is (= "b2" (get-cell-value wb sheet-name 1 1)))
-    (is (= "" (get-cell-value wb sheet-name 1 2)))
-    (is (= "a3" (get-cell-value wb sheet-name 2 0)))
-    (is (= "b3" (get-cell-value wb sheet-name 2 1)))
-    (is (= 1.0 (get-cell-value wb sheet-name 2 2)))
-    (is (= "a4" (get-cell-value wb sheet-name 3 0)))
-    (is (= "b4" (get-cell-value wb sheet-name 3 1)))
-    (is (= "" (get-cell-value wb sheet-name 3 2)))
     ))

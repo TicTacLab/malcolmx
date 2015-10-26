@@ -212,8 +212,9 @@
        (map #(.getSheetName ^Sheet %))))
 
 
-(defn get-last-row-index [sheet]
-  (.getLastRowNum sheet))
+(defn count-rows [sheet]
+  (.getPhysicalNumberOfRows sheet))
+;(.getLastRowNum sheet))
 
 (defn get-cell [workbook sheet-name row-index column-index]
   (some-> workbook
@@ -268,8 +269,9 @@
 (defn append-rows!
   [^Workbook workbook sheet-name new-sheet-data]
   (let [sheet (.getSheet workbook sheet-name)
-        row-offset (dec (get-last-row-index sheet))
+        row-offset (count-rows sheet)
         new-sheet-data-with-addresses (add-address new-sheet-data row-offset)]
+    (>trace new-sheet-data-with-addresses)
     (set-cells! workbook sheet-name new-sheet-data-with-addresses)))
 
 (defn create-rows!
@@ -277,23 +279,16 @@
    (create-rows! workbook sheet-name 0))
   ([^Workbook workbook sheet-name row-offset]
    (let [sheet (.getSheet workbook sheet-name)
-         last-row (inc (get-last-row-index sheet))]
+         last-row (inc (count-rows sheet))]
      (doseq [row-number (range row-offset last-row)]
        ;; rows must be overwritten
        (.createRow sheet row-number)))))
 
-(defn remove-rows!
-  ([^Workbook workbook sheet-name]
+(defn remove-rows!([^Workbook workbook sheet-name]
    (remove-rows! workbook sheet-name 0))
   ([^Workbook workbook sheet-name row-offset]
    (let [sheet (.getSheet workbook sheet-name)
-         last-row (inc (get-last-row-index sheet))]
+         last-row (inc (count-rows sheet))]
      (doseq [row-number (range row-offset last-row)]
        (when-let [row (.getRow sheet row-number)]
          (.removeRow sheet row))))))
-
-(defn set-rows!
-  [^Workbook workbook sheet-name new-sheet-data]
-  (let [sheet (.getSheet workbook sheet-name)]
-    (remove-rows! workbook sheet-name)
-    (set-cells! workbook sheet-name (add-address new-sheet-data))))
