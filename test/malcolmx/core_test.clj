@@ -293,7 +293,7 @@
         data [["a1" "b1" 1.0]
               ["a2" "b2" nil]
               ["a3" "b3" 3]
-              ["a4" "b4" ""]]        ]
+              ["a4" "b4" (int 3)]]        ]
     (remove-rows! wb sheet-name 1)
     (append-rows! wb sheet-name data)
     ;; head
@@ -311,5 +311,5 @@
     (is (= 3.0 (get-cell-value wb sheet-name 3 2)))
     (is (= "a4" (get-cell-value wb sheet-name 4 0)))
     (is (= "b4" (get-cell-value wb sheet-name 4 1)))
-    (is (= "" (get-cell-value wb sheet-name 4 2)))
+    (is (= 3.0 (get-cell-value wb sheet-name 4 2)))
     ))

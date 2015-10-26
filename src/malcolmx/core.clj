@@ -30,6 +30,8 @@
   (set-value [this] "set cell value"))
 
 (extend-protocol CellProtocol
+  Integer
+  (set-value [this] (double this))
   Long
   (set-value [this] (double this))
   Float
