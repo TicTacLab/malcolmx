@@ -21,6 +21,7 @@
 (t/defalias CellValue (t/U Number String Boolean nil))
 (t/defalias RowData (t/Map ColumnName CellValue))
 (t/defalias SheetData (Seqable RowData))
+(t/defalias RawSheetData (Seqable (Seqable CellValue)))
 (t/defalias Header (t/Vec ColumnName))
 (t/defalias SheetName String)
 (t/defalias SheetNames [SheetName])
@@ -268,12 +269,14 @@
                    data
                    (index-offset data row-offset)))))
 
+(ann  append-rows! [Workbook SheetName RawSheetData -> Workbook])
 (defn append-rows!
   [^Workbook workbook sheet-name new-sheet-data]
   (let [sheet (.getSheet workbook sheet-name)
         row-offset (count-rows sheet)
         new-sheet-data-with-addresses (add-address new-sheet-data row-offset)]
-    (set-cells! workbook sheet-name new-sheet-data-with-addresses)))
+    (set-cells! workbook sheet-name new-sheet-data-with-addresses)
+    workbook))
 
 (defn create-rows!
   ([^Workbook workbook sheet-name]

@@ -3,7 +3,7 @@
         clojure.pprint
         clojure.test))
 
-(def w (parse "/home/serzh/AutoCalc_Soccer_EventLog.xlsx"))
+(def w (parse "test/malcolmx/array.xlsx"))
 
 (deftest array-test
   (is (= [{"Value" 4.0}
@@ -19,12 +19,12 @@
           {"Value" 1.0}
           {"Value" 1.0}
           {"Value" 0.0}
+          {"Value" 3.0}
           {"Value" 0.0}
-          {"Value" 0.0}
-          {"Value" 0.0}
+          {"Value" 2.0}
           {"Value" 0.0}
           {"Value" false}
-          {"Value" false}
+          {"Value" true}
           {"Value" 0.0}
           {"Value" true}
           {"Value" true}

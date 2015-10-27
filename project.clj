@@ -5,7 +5,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [com.betengines/poi "3.13-1"]
+                 ;[org.apache.poi/poi "3.13"]
                  [com.betengines/poi-ooxml "3.13-1" :exclusions [org.apache.poi/poi]]
+                 ;[org.apache.poi/poi-ooxml "3.13" :exclusions [org.apache.poi/poi]]
                  [org.apache.poi/poi-ooxml-schemas "3.13" :exclusions [org.apache.poi/poi]]
                  [commons-codec/commons-codec "1.9"]
                  [org.apache.xmlbeans/xmlbeans "2.6.0"]
