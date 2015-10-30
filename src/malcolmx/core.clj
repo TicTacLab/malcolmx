@@ -201,12 +201,13 @@
     (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
                                              :workbook   workbook}))))
 
-(ann excel-file? [(Array Byte) String -> Boolean])
-(defn excel-file? [^BufferedInputStream is type]
-  (case type
-    "xls" (POIFSFileSystem/hasPOIFSHeader is)
-    "xlsx" (POIXMLDocument/hasOOXMLHeader is)
-    :else false))
+(ann excel-file? [IOFactory String -> Boolean])
+(defn excel-file? [^IOFactory is type]
+  (let [io-stream (io/input-stream is)]
+    (case type
+     "xls" (POIFSFileSystem/hasPOIFSHeader io-stream)
+     "xlsx" (POIXMLDocument/hasOOXMLHeader io-stream)
+     :else false)))
 
 (ann get-sheets-names [Workbook -> SheetNames])
 (defn get-sheets-names [^Workbook workbook]
