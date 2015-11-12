@@ -297,3 +297,32 @@
      (doseq [row-number (range row-offset last-row)]
        (when-let [row (.getRow sheet row-number)]
          (.removeRow sheet row))))))
+
+
+(defn get-sheet-with-row [^Workbook workbook sheet-name]
+  "return sheet with column:value cells AND :row-number value"
+  (if-let [sheet (.getSheet workbook sheet-name)]
+    (let [header (sheet-header sheet)
+          columns-number (count header)
+          header-with-row-number (conj header :row-number)
+          evaluator (make-evaluator workbook)
+          rows (->> sheet get-rows rest)
+          rows-count (count rows)]
+      (map (fn [row-number row]
+             (as-> (get-cells row columns-number) $
+                   (mapv (fn [^Cell cell]
+                           (when cell (cell-value evaluator cell))) $)
+                   (conj $ row-number)
+                   (make-row-data header-with-row-number $)))
+           (range 1 (inc rows-count))
+           rows))
+    (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
+                                             :workbook   workbook}))))
+
+(defn remove-row-numbers!
+  "remove rows by number in sheet"
+  [^Workbook wb sheet-name row-numbers]
+  (let [sheet (.getSheet wb sheet-name)]
+    (doseq [row-number row-numbers]
+      (when-let [row (.getRow sheet row-number)]
+        (.removeRow sheet row)))))

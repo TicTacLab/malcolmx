@@ -312,3 +312,18 @@
     (is (= "b4" (get-cell-value wb sheet-name 4 1)))
     (is (= 3.0 (get-cell-value wb sheet-name 4 2)))
     ))
+
+(deftest get-sheet-with-row-test
+  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        sheet-name "OUT"
+        row-numbers (range 1 21)]
+    (is (= row-numbers
+           (map :row-number (get-sheet-with-row wb sheet-name))))))
+
+(deftest remove-row-numbers-test
+  (let [wb (parse "test/malcolmx/Bolvanka.xlsx")
+        sheet-name "OUT"
+        row-numbers [1 2 3 4 5 7 8 9 10 11 12 13 14 15 16 17 18 19 21]]
+    (remove-row-numbers! wb sheet-name row-numbers)
+    (is (= [1 2]
+           (map :row-number (get-sheet-with-row wb sheet-name))))))
