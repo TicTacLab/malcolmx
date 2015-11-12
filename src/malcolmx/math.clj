@@ -88,9 +88,14 @@
       (let [cumulative-value (get-eval-value cumulative)
             x-value (get-eval-value x)
             mean-value (get-eval-value mean)]
-        (if (and (number? x-value) (>= x-value 0)
+        (cond
+          (= mean-value 0) 1
+
+          (and (number? x-value) (>= x-value 0)
                  (number? mean-value) (> mean-value 0))
           (NumberEval. ^double (poisson-distribution x-value mean-value cumulative-value))
+
+          :else
           (StringEval. "VALUE!"))))))
 
 
