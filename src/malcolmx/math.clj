@@ -73,26 +73,6 @@
 
 (def normdist-udf (udf-fun "_xlfn.NORM.DIST" normal-distribution-free-fun))
 
-;;; Poisson Distribution
-
-(defn poisson-distribution [x mean cumulative]
-  (let [poiss (PoissonDistribution. mean)]
-    (if (true? cumulative)
-      (.cumulativeProbability poiss x)
-      (.probability poiss x))))
-
-;;; POISSON
-(def poisson-distribution-fun
-  (proxy [Fixed3ArgFunction] []
-    (evaluate [col-index  row-index x mean cumulative]
-      (let [cumulative-value (get-eval-value cumulative)
-            x-value (get-eval-value x)
-            mean-value (get-eval-value mean)]
-        (if (and (number? x-value) (>= x-value 0)
-                 (number? mean-value) (> mean-value 0))
-          (NumberEval. ^double (poisson-distribution x-value mean-value cumulative-value))
-          (StringEval. "VALUE!"))))))
-
 
 ;;; Pascal Distribution
 
@@ -194,7 +174,6 @@
 
 (defn register-funs! []
   (register-fun! "NORMDIST" normal-distribution-fun)
-  (register-fun! "POISSON" poisson-distribution-fun)
   (register-fun! "CRITBINOM" critbinom-fun)
   (register-fun! "SUM" sum-free))
 
