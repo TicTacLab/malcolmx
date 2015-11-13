@@ -89,7 +89,7 @@
             x-value (get-eval-value x)
             mean-value (get-eval-value mean)]
         (cond
-          (zero? mean-value) 1
+          (zero? mean-value) (NumberEval. 1.0)
 
           (and (number? x-value) (>= x-value 0)
                  (number? mean-value) (> mean-value 0))
