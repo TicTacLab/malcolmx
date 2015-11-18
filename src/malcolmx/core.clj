@@ -13,6 +13,8 @@
            (org.apache.poi.poifs.filesystem POIFSFileSystem)
            (java.lang.reflect Array)))
 
+
+
 (defmacro nil-return [& body]
   `(do (t/tc-ignore ~@body)
       nil))
@@ -326,3 +328,11 @@
     (doseq [row-number row-numbers]
       (when-let [row (.getRow sheet row-number)]
         (.removeRow sheet row)))))
+
+(defn debug-cell [^Workbook w a1]
+  (let [cr (CellReference. a1)
+        sheet (.getSheet w (.getSheetName cr))
+        row (.getRow sheet (.getRow cr))
+        cell (.getCell row (.getCol cr))
+        fe (make-evaluator w)]
+    (cell-value fe cell)))
