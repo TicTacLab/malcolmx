@@ -1,5 +1,4 @@
 (ns malcolmx.math
-  (:use [clojure.tools.trace])
   (:import [org.apache.commons.math3.distribution NormalDistribution
                                                   PascalDistribution
                                                   PoissonDistribution
