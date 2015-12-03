@@ -6,10 +6,8 @@
   :omit-source true
   :aot :all
   :dependencies [[org.clojure/clojure "1.8.0-RC3"]
-                 [com.betengines/poi "3.13-3"]
-                 ;[org.apache.poi/poi "3.13"]
-                 [com.betengines/poi-ooxml "3.13-3" :exclusions [org.apache.poi/poi]]
-                 ;[org.apache.poi/poi-ooxml "3.13" :exclusions [org.apache.poi/poi]]
+                 [com.betengines/poi "3.13-5"]
+                 [com.betengines/poi-ooxml "3.13-5" :exclusions [org.apache.poi/poi]]
                  [org.apache.poi/poi-ooxml-schemas "3.13" :exclusions [org.apache.poi/poi]]
                  [org.apache.poi/poi-scratchpad "3.13" :exclusions [org.apache.poi/poi]]
                  [commons-codec/commons-codec "1.9"]

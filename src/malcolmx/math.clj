@@ -171,16 +171,39 @@
                (unchecked-add acc (aget ^doubles args i))))
     (getMaxNumOperands [] 255)))
 
-(defn register-funs! []
-  (register-fun! "NORMDIST" normal-distribution-fun)
-  (register-fun! "CRITBINOM" critbinom-fun)
-  (register-fun! "SUM" sum-free))
-
-(register-funs!)
-
 (defn register-udf-funs! [^Workbook workbook]
   (.addToolPack workbook normdist-udf)
   (.addToolPack workbook pascal-udf)
   (.addToolPack workbook binomial-udf)
   (.addToolPack workbook binom-inv-udf))
 
+;;; Poisson Distribution
+
+(defn poisson-distribution [x mean cumulative]
+  (cond
+    (and (= x 0) (= mean 0)) 1
+    (and (> x 20) (true? cumulative)) 1
+    :else
+    (let [poiss (PoissonDistribution. mean)]
+      (if (true? cumulative)
+        (.cumulativeProbability poiss x)
+        (.probability poiss x)))))
+
+;;; POISSON
+(def poisson-distribution-fun
+  (proxy [Fixed3ArgFunction] []
+    (evaluate [col-index  row-index x mean cumulative]
+      (let [cumulative-value (get-eval-value cumulative)
+            x-value (get-eval-value x)
+            mean-value (get-eval-value mean)]
+        (if (and (number? x-value) (>= x-value 0) (number? mean-value))
+          (NumberEval. ^double (poisson-distribution x-value mean-value cumulative-value))
+          (StringEval. "NUM!"))))))
+
+(defn register-funs! []
+  (register-fun! "NORMDIST" normal-distribution-fun)
+  (register-fun! "CRITBINOM" critbinom-fun)
+  (register-fun! "SUM" sum-free)
+  (register-fun! "POISSON" poisson-distribution-fun))
+
+(register-funs!)
