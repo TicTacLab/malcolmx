@@ -30,21 +30,20 @@
 
 
 (defprotocol CellProtocol
-  (set-value [this] "set cell value"))
+  (set-cell-value [this ^Cell cell] "set cell value"))
 
 (extend-protocol CellProtocol
-  Integer
-  (set-value [this] (double this))
-  Long
-  (set-value [this] (double this))
-  Float
-  (set-value [this] (double this))
-  Double
-  (set-value [this] this)
+  Number
+  (set-cell-value [this ^Cell cell]
+    (.setCellValue cell (double this)))
+
   String
-  (set-value [this] this)
+  (set-cell-value [this ^Cell cell]
+    (.setCellValue cell this))
+
   nil
-  (set-value [_] ""))
+  (set-cell-value [this ^Cell cell]
+    (.setCellValue cell "")))
 
 (ann ^:no-check get-cells (Fn [Row -> (Seqable Cell)]
                               [Row Number -> (Seqable (t/U Cell nil))]))
@@ -62,10 +61,6 @@
 (defn index-of [header column-name]
   (.indexOf ^List header column-name))
 
-(ann ^:no-check set-cell-value [Cell CellValue -> nil])
-(defn set-cell-value [^Cell cell value]
-  (.setCellValue cell (set-value value)))
-
 (ann sheet-header [Sheet -> Header])
 (defn sheet-header [^Sheet sheet]
   (if-let [row (.getRow sheet 0)]
@@ -79,7 +74,7 @@
   (mapv (t/fn [^Cell cell :- (t/U Cell nil) header-name :- ColumnName] :- nil
           (when cell
             (when-let [value (get row-data header-name)]
-              (set-cell-value cell value))))
+              (set-cell-value value cell))))
         (get-cells row (count header)) header)
   nil)
 
@@ -218,11 +213,11 @@
        (map #(.getSheetName ^Sheet %))))
 
 
-(defn count-rows [sheet]
+(defn count-rows [^Sheet sheet]
   (.getPhysicalNumberOfRows sheet))
-;(.getLastRowNum sheet))
 
-(defn get-cell [workbook sheet-name row-index column-index]
+(defn get-cell
+  [^Workbook workbook sheet-name row-index column-index]
   (some-> workbook
           (.getSheet sheet-name)
           (.getRow row-index)
@@ -234,13 +229,13 @@
 
 (defn create-row!
   ;; Safe return clean of existent row
-  [sheet row-index]
+  ^Row [^Sheet sheet row-index]
   (if-let [row (.getRow sheet row-index)]
     row
     (.createRow sheet row-index)))
 
-(defn create-cell! [sheet row-index column-index]
-  (let [row (create-row! sheet row-index)]
+(defn create-cell! ^Cell [^Sheet sheet row-index column-index]
+  (let [^Row row (create-row! sheet row-index)]
     (when-let [cell (.getCell row column-index)]
       (.removeCell row cell))
     (.createCell row column-index)))
@@ -254,7 +249,7 @@
     (if-let [sheet (.getSheet workbook sheet-name)]
       (let [[row-id coll-id cell-value] cell-data
             cell (create-cell! sheet row-id coll-id)]
-        (set-cell-value cell cell-value))
+        (set-cell-value cell-value cell))
       (throw (ex-info "Sheet does not exists" {:sheet-name sheet-name
                                                :workbook   workbook})))))
 (defn index-offset
@@ -329,7 +324,7 @@
       (when-let [row (.getRow sheet row-number)]
         (.removeRow sheet row)))))
 
-(defn debug-cell [^Workbook w a1]
+(defn debug-cell [^Workbook w ^String a1]
   (let [cr (CellReference. a1)
         sheet (.getSheet w (.getSheetName cr))
         row (.getRow sheet (.getRow cr))

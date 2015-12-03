@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :omit-source true
   :aot :all
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.8.0-RC3"]
                  [com.betengines/poi "3.13-3"]
                  ;[org.apache.poi/poi "3.13"]
                  [com.betengines/poi-ooxml "3.13-3" :exclusions [org.apache.poi/poi]]
@@ -26,6 +26,7 @@
                            ["releases" {:url "http://52.28.244.218:8080/repository/internal"
                                         :username :env
                                         :password :env}]]
+  :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
   :plugins [[lein-ring "0.8.2"]
             [lein-protobuf "0.4.1"]]
 
