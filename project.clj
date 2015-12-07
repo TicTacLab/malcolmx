@@ -18,7 +18,7 @@
                  [org.flatland/protobuf "0.8.1"]
                  [org.clojure/core.typed "0.3.0"]]
 
-  :repositories ^:replace [["snapshots" {:url "http://52.28.244.218:8080/repository/snapshots"
+  :repositories [["snapshots" {:url "http://52.28.244.218:8080/repository/snapshots"
                                          :username :env
                                          :password :env}]
                            ["releases" {:url "http://52.28.244.218:8080/repository/internal"

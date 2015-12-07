@@ -22,6 +22,11 @@
   (testing "Pascal PDF DIST"
     (is (roughly= 0.023647262 (math/pascal-distribution 10 20 0.8 false)))))
 
+(deftest poisson-test
+  (are [res x mean cummulative] (= res (math/poisson-distribution x mean cummulative))
+    1                   1 0 true
+    0.3678794411714609  0 1 true))
+
 (deftest binom-inv-test
   (testing "BINOM.INV/ CRITBINOM"
     (is (= 75 (math/binom-inv 100 0.75 0.5)))
