@@ -181,8 +181,10 @@
 
 (defn poisson-distribution [x mean cumulative]
   (cond
-    (zero? mean) 1
-    (and (> x 20) (true? cumulative)) 1
+    (and (zero? mean) (false? cumulative)) 0
+    (and (zero? mean) (true? cumulative)) 1
+
+    (and (> x 20.0) (true? cumulative)) 1
     :else
     (let [poiss (PoissonDistribution. mean)]
       (if (true? cumulative)

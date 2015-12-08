@@ -24,8 +24,12 @@
 
 (deftest poisson-test
   (are [res x mean cummulative] (= res (math/poisson-distribution x mean cummulative))
-    1                   1 0 true
-    0.3678794411714609  0 1 true))
+
+    0.3678794411714609  0.0 1 true
+    1                   1.0 0 true
+    0                   1.0 0 false
+    1                   22.0  0 true
+                                ))
 
 (deftest binom-inv-test
   (testing "BINOM.INV/ CRITBINOM"
