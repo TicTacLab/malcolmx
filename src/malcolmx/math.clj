@@ -198,6 +198,7 @@
     (not (and (number? x) (number? mean))) excel-num-error-str
     (neg? x) excel-num-error-str
     (and (pos? x) (neg? mean)) excel-num-error-str
+    (and (zero? x) (zero? mean)) 1
     (and (zero? x) (neg? mean)) (euler-number-pow mean)
     (and (zero? mean) (false? cumulative?)) 0
     (and (zero? mean) (true? cumulative?)) 1

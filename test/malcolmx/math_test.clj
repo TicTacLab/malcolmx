@@ -31,6 +31,7 @@
     1                   1.0 0 true
     0                   1.0 0 false
     1                   22.0  0 true
+    1                 0   0 false
     Math/E            0  -1 true
     Math/E            0  -1 false
                                 ))
