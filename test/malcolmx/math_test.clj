@@ -23,9 +23,18 @@
     (is (roughly= 0.023647262 (math/pascal-distribution 10 20 0.8 false)))))
 
 (deftest poisson-test
-  (are [res x mean cummulative] (= res (math/poisson-distribution x mean cummulative))
-    1                   1 0 true
-    0.3678794411714609  0 1 true))
+  (are [res x mean cummulative] (= res (math/poisson-distribution-excel x mean cummulative))
+    "NUM!"              "1" 1 true
+    "NUM!"               1  "1" false
+    "NUM!"               -2  1  true
+    0.3678794411714609  0.0 1 true
+    1                   1.0 0 true
+    0                   1.0 0 false
+    1                   22.0  0 true
+    1                 0   0 false
+    Math/E            0  -1 true
+    Math/E            0  -1 false
+                                ))
 
 (deftest binom-inv-test
   (testing "BINOM.INV/ CRITBINOM"

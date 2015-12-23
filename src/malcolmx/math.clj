@@ -9,6 +9,8 @@
            [org.apache.poi.ss.formula WorkbookEvaluator]
            [org.apache.poi.ss.usermodel Workbook]))
 
+(def excel-num-error-str "NUM!")
+
 (defn probability? [^double probability_s]
   (< 0.0 probability_s 1.0))
 
@@ -179,26 +181,42 @@
 
 ;;; Poisson Distribution
 
-(defn poisson-distribution [x mean cumulative]
+(defn euler-number-pow [^double mean]
+  (->> mean
+       double
+       Math/abs
+       (Math/pow Math/E)))
+
+(defn poisson-distribution [x mean cumulative?]
+  (let [poiss (PoissonDistribution. mean)]
+    (if cumulative?
+      (.cumulativeProbability poiss x)
+      (.probability poiss x))))
+
+(defn poisson-distribution-excel [x mean cumulative?]
   (cond
-    (zero? mean) 1
-    (and (> x 20) (true? cumulative)) 1
-    :else
-    (let [poiss (PoissonDistribution. mean)]
-      (if (true? cumulative)
-        (.cumulativeProbability poiss x)
-        (.probability poiss x)))))
+    (not (and (number? x) (number? mean))) excel-num-error-str
+    (neg? x) excel-num-error-str
+    (and (pos? x) (neg? mean)) excel-num-error-str
+    (and (zero? x) (zero? mean)) 1
+    (and (zero? x) (neg? mean)) (euler-number-pow mean)
+    (and (zero? mean) (false? cumulative?)) 0
+    (and (zero? mean) (true? cumulative?)) 1
+    (and (> x 20.0) (true? cumulative?)) 1
+    :else (poisson-distribution x mean cumulative?)))
 
 ;;; POISSON
 (def poisson-distribution-fun
   (proxy [Fixed3ArgFunction] []
-    (evaluate [col-index  row-index x mean cumulative]
-      (let [cumulative-value (get-eval-value cumulative)
-            x-value (get-eval-value x)
-            mean-value (get-eval-value mean)]
-        (if (and (number? x-value) (>= x-value 0) (number? mean-value))
-          (NumberEval. ^double (poisson-distribution x-value mean-value cumulative-value))
-          (StringEval. "NUM!"))))))
+    (evaluate [col-index  row-index x-cell mean-cell cumulative-cell]
+      (let [cumulative? (get-eval-value cumulative-cell)
+            x (get-eval-value x-cell)
+            mean (get-eval-value mean-cell)
+            result (poisson-distribution-excel x mean cumulative?)]
+        (cond
+          (string? result) (StringEval. ^String result)
+          (number? result) (NumberEval. ^double result)
+          :else (throw (RuntimeException. (str "Unexpected result type! " result))))))))
 
 (defn register-funs! []
   (register-fun! "NORMDIST" normal-distribution-fun)
