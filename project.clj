@@ -18,15 +18,16 @@
                  [org.flatland/protobuf "0.8.1"]
                  [org.clojure/core.typed "0.3.0"]]
 
-  :repositories [["snapshots" {:url "http://52.28.244.218:8080/repository/snapshots"
-                                         :username :env
-                                         :password :env}]
-                           ["releases" {:url "http://52.28.244.218:8080/repository/internal"
-                                        :username :env
-                                        :password :env}]]
+  :repositories [["snapshots" {:url "s3p://com.betengines.repo/snapshots"
+                               :username   "AKIAJULDYNE45TDQBDUQ"
+                               :passphrase "xpNOSHkr069mqbY1tbWZjzTQPO0o5H0cmd568c1V"}]
+                 ["releases" {:url "s3p://com.betengines.repo/releases"
+                              :username   "AKIAJULDYNE45TDQBDUQ"
+                              :passphrase "xpNOSHkr069mqbY1tbWZjzTQPO0o5H0cmd568c1V"}]]
   :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
   :plugins [[lein-ring "0.8.2"]
-            [lein-protobuf "0.4.1"]]
+            [lein-protobuf "0.4.1"]
+            [s3-wagon-private "1.1.2"]]
 
   :profiles {:dev  {:source-paths ["dev"]
                     :global-vars {*warn-on-reflection* true}
