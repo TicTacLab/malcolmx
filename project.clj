@@ -1,11 +1,11 @@
-(defproject malcolmx "0.1.9-SNAPSHOT"
+(defproject malcolmx "0.1.9"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :omit-source true
   :aot :all
-  :dependencies [[org.clojure/clojure "1.8.0-RC3"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [com.betengines/poi "3.13-5"]
                  [com.betengines/poi-ooxml "3.13-5" :exclusions [org.apache.poi/poi]]
                  [org.apache.poi/poi-ooxml-schemas "3.13" :exclusions [org.apache.poi/poi]]
